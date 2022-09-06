@@ -1,0 +1,32 @@
+button:
+  about: 关于
+  back: 返回
+  go: 确定
+  home: 首页
+  toggle_dark: 切换深色模式
+  toggle_langs: 切换语言
+description: 山大地图项目的后台
+drawer:
+  list:
+    home: 主页
+    new_map: 新版地图
+    old_map: 旧版地图
+intro:
+  aka: 也叫
+  desc: 固执己见的 Vite 项目模板
+  dynamic-route: 动态路由演示
+  hi: 你好，{name}
+  whats-your-name: 输入你的名字
+locale_name: 简体中文
+new_map_menu:
+  drag: 直接拖拽
+  rotate: 旋转
+  scale: 缩放
+  title: 工具栏
+  upload: 上传图片
+  upload_state:
+    finished: 完成
+    outlining: 描边中...
+    waiting: 等待上传
+not-found: 未找到页面
+title: 山大地图 - 终端

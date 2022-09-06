@@ -1,0 +1,29 @@
+button:
+  about: About
+  back: Back
+  go: GO
+  home: Home
+  toggle_dark: Toggle dark mode
+  toggle_langs: Change languages
+drawer:
+  list:
+    new_map: New map
+intro:
+  aka: Also known as
+  desc: Opinionated Vite Starter Template
+  dynamic-route: Demo of dynamic route
+  hi: Hi, {name}!
+  whats-your-name: What's your name?
+locale_name: English
+new_map_menu:
+  drag: Drag directly
+  rotate: Rotate
+  scale: Scale
+  title: Tools
+  upload: Upload
+  upload_state:
+    finished: finished
+    outlining: outlining...
+    waiting: waiting...
+not-found: Not found
+title: SDU map - admin

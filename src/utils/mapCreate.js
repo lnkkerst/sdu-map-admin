@@ -24,6 +24,9 @@ import { useMapStore } from '~/store/newMap';
 
 const settings = useSetting();
 
+/**
+ * Create the context menu for map.
+ */
 export function createContextMenu() {
   const contextmenu = new ContextMenu({
     defaultItems: true
@@ -84,6 +87,9 @@ export function createContextMenu() {
   return contextmenu;
 }
 
+/**
+ * Create the layer contains markers for map.
+ */
 export function createMarkerLayer() {
   const source = new VectorSource();
   const layer = new VectorLayer({
@@ -118,6 +124,9 @@ export function createMarkerLayer() {
   };
 }
 
+/**
+ * Create the vector layer contains image controllers for map.
+ */
 export function createVectorLayer() {
   const source = new VectorSource();
   const style = new Style({
@@ -297,6 +306,11 @@ export function createVectorLayer() {
   };
 }
 
+/**
+ * Create a map and mount to the el.
+ * @param {HTMLElement | string} el
+ * @returns Map
+ */
 export default function createMap(el) {
   const vectorLayer = createVectorLayer();
   const markerLayer = createMarkerLayer();

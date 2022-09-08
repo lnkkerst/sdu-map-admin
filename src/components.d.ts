@@ -27,11 +27,15 @@ declare module '@vue/runtime-core' {
     VarCard: typeof import('@varlet/ui')['_CardComponent'];
     VarCell: typeof import('@varlet/ui')['_CellComponent'];
     VarCol: typeof import('@varlet/ui')['_ColComponent'];
+    VarForm: typeof import('@varlet/ui')['_FormComponent'];
     VarIcon: typeof import('@varlet/ui')['_IconComponent'];
+    VarImage: typeof import('@varlet/ui')['_ImageComponent'];
+    VarInput: typeof import('@varlet/ui')['_InputComponent'];
     VarList: typeof import('@varlet/ui')['_ListComponent'];
     VarMenu: typeof import('@varlet/ui')['_MenuComponent'];
     VarPopup: typeof import('@varlet/ui')['_PopupComponent'];
     VarRow: typeof import('@varlet/ui')['_RowComponent'];
+    VarSpace: typeof import('@varlet/ui')['_SpaceComponent'];
     VarStyleProvider: typeof import('@varlet/ui')['_StyleProviderComponent'];
     VarSwitch: typeof import('@varlet/ui')['_SwitchComponent'];
     VarTab: typeof import('@varlet/ui')['_TabComponent'];

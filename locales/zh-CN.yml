@@ -1,3 +1,7 @@
+api:
+  not_found: 请求的资源不存在
+  token_forbidden: 您无权执行此操作
+  token_invalid: Token 失效，请重新登陆
 button:
   about: 关于
   back: 返回
@@ -18,6 +22,15 @@ intro:
   hi: 你好，{name}
   whats-your-name: 输入你的名字
 locale_name: 简体中文
+login:
+  captcha: 验证码
+  captcha_verify: 验证码不能为空
+  login: 登陆
+  password: 密码
+  password_verify: 密码不应该为空
+  title: 登陆
+  username: 用户名
+  username_verify: 用户名不应为空
 new_map_menu:
   drag: 直接拖拽
   rotate: 旋转

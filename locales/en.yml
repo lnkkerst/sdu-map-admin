@@ -1,3 +1,7 @@
+api:
+  not_found: Not found
+  token_forbidden: You do not have permission.
+  token_invalid: Token invalid, please login again
 button:
   about: About
   back: Back
@@ -15,6 +19,15 @@ intro:
   hi: Hi, {name}!
   whats-your-name: What's your name?
 locale_name: English
+login:
+  captcha: Captcha
+  captcha_verify: Captcha should not be empty
+  login: Login
+  password: Password
+  password_verify: Password should not be empty
+  title: Login
+  username: Username
+  username_verify: Username should not be empty
 new_map_menu:
   drag: Drag directly
   rotate: Rotate
@@ -26,4 +39,4 @@ new_map_menu:
     outlining: outlining...
     waiting: waiting...
 not-found: Not found
-title: SDU map - admin
+title: SDU Map - Admin

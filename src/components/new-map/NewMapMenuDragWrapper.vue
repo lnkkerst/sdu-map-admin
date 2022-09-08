@@ -13,8 +13,10 @@ const state = useStorage(
   localStorage,
   { mergeDefaults: true }
 );
+
 const active = $ref(false);
 const sizable = $ref(true);
+const display = $ref(true);
 </script>
 
 <template>
@@ -43,20 +45,32 @@ const sizable = $ref(true);
         <template #left>{{ t('new_map_menu.title') }}</template>
         <template #right>
           <var-icon
+            v-show="display"
+            i-mdi-minus
+            @click="display = false"
+          ></var-icon>
+          <var-icon
+            v-show="!display"
+            i-mdi-plus
+            @click="display = true"
+          ></var-icon>
+          <var-icon
             v-show="!sizable"
-            class="i-mdi-pin-off text-sm"
+            i-mdi-pin-off
+            text-sm
             @click="sizable = true"
           ></var-icon>
           <var-icon
             v-show="sizable"
-            class="i-mdi-pin text-sm"
+            i-mdi-pin
+            text-sm
             @click="sizable = false"
           ></var-icon>
           <var-icon></var-icon>
         </template>
       </var-app-bar>
 
-      <div class="h-full w-full pt-6 flex">
+      <div v-show="display" class="h-full w-full pt-6 flex">
         <slot />
       </div>
     </div>

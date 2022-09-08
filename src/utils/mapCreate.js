@@ -13,10 +13,110 @@ import {
 } from 'ol/events/condition';
 import { Projection } from 'ol/proj';
 import Select from 'ol/interaction/Select';
-import { calcExtent, calcRect, calcCenter as calculateCenter } from './map';
+import ContextMenu from 'ol-contextmenu';
+import {
+  calcExtent,
+  calcRect,
+  calcCenter as calculateCenter
+} from '~/utils/geom';
 import { useSetting } from '~/composables/setting';
+import { useMapStore } from '~/store/newMap';
 
 const settings = useSetting();
+
+export function createContextMenu() {
+  const contextmenu = new ContextMenu({
+    defaultItems: true
+  });
+
+  const addMarkerItem = {
+    text: '添加标记',
+    callback: e => {
+      useMapStore().addMarker({ coordinate: e.coordinate });
+    }
+  };
+
+  const removeMarkerItem = {
+    text: '删除标记',
+    callback(obj) {
+      useMapStore().removeMarker(obj.data.marker.id);
+    }
+  };
+
+  const removeImageItem = {
+    text: '删除图片',
+    callback(obj) {
+      useMapStore().removeImage(obj.data.image);
+    }
+  };
+
+  const items = [addMarkerItem];
+
+  contextmenu.extend(items);
+
+  let del = 0;
+  contextmenu.on('beforeopen', evt => {
+    for (let x = 1; x <= del; ++x) {
+      contextmenu.pop();
+    }
+    del = 0;
+    let marker;
+    let image;
+    useMapStore().map.forEachFeatureAtPixel(evt.pixel, ft => {
+      if (ft.get('imageLayer')) {
+        image = ft.get('imageLayer');
+      }
+      if (ft.get('srcMarker')) {
+        marker = ft.get('srcMarker');
+      }
+    });
+    if (marker) {
+      removeMarkerItem.data = { marker };
+      contextmenu.push(removeMarkerItem);
+      del = del + 1;
+    }
+    if (image) {
+      removeImageItem.data = { image };
+      contextmenu.push(removeImageItem);
+      del = del + 1;
+    }
+  });
+  return contextmenu;
+}
+
+export function createMarkerLayer() {
+  const source = new VectorSource();
+  const layer = new VectorLayer({
+    source,
+    zIndex: 114515
+  });
+  const modify = new Modify({
+    hitDetection: layer,
+    source,
+    condition(evt) {
+      return (
+        settings.value.dragWithoutModifyKey || platformModifierKeyOnly(evt)
+      );
+    }
+  });
+  modify.on(['modifystart', 'modifyend'], evt => {
+    if (useMapStore().map) {
+      useMapStore().map.getTargetElement().style.cursor =
+        evt.type === 'modifystart' ? 'grabbing' : 'pointer';
+    }
+  });
+  const overlaySource = modify.getOverlay().getSource();
+  overlaySource.on(['addfeature', 'removefeature'], evt => {
+    if (useMapStore().map) {
+      useMapStore().map.getTargetElement().style.cursor =
+        evt.type === 'addfeature' ? 'pointer' : '';
+    }
+  });
+  return {
+    layer,
+    interactions: [modify]
+  };
+}
 
 export function createVectorLayer() {
   const source = new VectorSource();
@@ -30,7 +130,7 @@ export function createVectorLayer() {
     }),
     stroke: new Stroke({
       color: '#3299cc',
-      width: 3
+      width: 2
     }),
     image: new CircleStyle({
       radius: 7,
@@ -49,6 +149,7 @@ export function createVectorLayer() {
   });
 
   const select = new Select({
+    layers: [layer],
     style(feature) {
       const styles = [style];
       const modifyGeometry = feature.get('modifyGeometry');
@@ -172,7 +273,7 @@ export function createVectorLayer() {
         feature.setGeometry(modifyGeometry.geometry);
         feature.unset('modifyGeometry', true);
       }
-      const imgLayer = feature.get('imgLayer');
+      const imgLayer = feature.get('imageLayer');
       if (imgLayer) {
         const source = imgLayer.getSource();
         let rect = calcRect({
@@ -197,7 +298,8 @@ export function createVectorLayer() {
 }
 
 export default function createMap(el) {
-  const vLayer = createVectorLayer();
+  const vectorLayer = createVectorLayer();
+  const markerLayer = createMarkerLayer();
 
   const extent = [-2560, -1440, 2560, 1440];
   const projection = new Projection({
@@ -205,9 +307,13 @@ export default function createMap(el) {
     units: 'pixels',
     extent
   });
+
   const map = new Map({
-    interactions: defaults().extend([...vLayer.interactions]),
-    layers: [vLayer.layer],
+    interactions: defaults().extend([
+      ...vectorLayer.interactions,
+      ...markerLayer.interactions
+    ]),
+    layers: [vectorLayer.layer, markerLayer.layer],
     target: el,
     view: new View({
       projection,
@@ -217,10 +323,12 @@ export default function createMap(el) {
       minZoom: 0.1
     })
   });
-
+  const contextmenu = createContextMenu();
+  map.addControl(contextmenu);
   return {
     map,
-    vLayer: vLayer.layer
+    vectorLayer: vectorLayer.layer,
+    markerLayer: markerLayer.layer
   };
 }
 

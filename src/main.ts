@@ -9,6 +9,7 @@ import '@unocss/reset/tailwind.css';
 import './styles/main.css';
 import 'uno.css';
 import 'ol/ol.css';
+import '../node_modules/ol-contextmenu/dist/ol-contextmenu.css';
 
 const routes = setupLayouts(generatedRoutes);
 

@@ -1,20 +1,28 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import Map from 'ol/Map';
+import type Map from 'ol/Map';
 import type { Coordinate } from 'ol/coordinate';
-import { distance } from 'ol/coordinate';
-import ImageLayer from 'ol/layer/Image';
-import type StaticImage from 'ol/source/ImageStatic';
+import type ImageLayer from 'ol/layer/Image';
 import type VectorLayer from 'ol/layer/Vector';
-import { Feature } from 'ol';
-import { Polygon } from 'ol/geom';
+import type { Feature } from 'ol';
 import type VectorSource from 'ol/source/Vector';
-import EditableImage from '~/models/ol/EditableImageSource';
-import { calcCenter, calcExtent, calcRect } from '~/utils/map';
+import { v4 as uuid } from 'uuid';
+import type EditableImage from '~/models/ol/EditableImageSource';
+import {
+  createFeatureForImageLayer,
+  createImageLayer,
+  createMarker
+} from '~/utils/map';
 
-type StaticImageLayer = ImageLayer<StaticImage>;
-type VectorSourceLayer = VectorLayer<VectorSource>;
+export type EditableImageLayer = ImageLayer<EditableImage>;
+export type VectorSourceLayer = VectorLayer<VectorSource>;
 
-const settings = useSetting();
+export enum BuildingType {
+  Teaching,
+  Dormitory,
+  Lab,
+  Functional,
+  Landscape
+}
 
 export interface MapImage {
   id: string;
@@ -24,115 +32,153 @@ export interface MapImage {
   center: Coordinate;
   rotate: number;
   priority?: number;
+  extraInfo?: string;
+  layer?: EditableImageLayer;
 }
-export interface Marker {
+
+export interface MapMarker {
   id: string;
   coordinate: Coordinate;
+  color: string;
+  mapId: string;
+  name: string;
+  englishName: string;
+  openTime: string;
+  extraInfo?: string;
+  feature?: Feature;
 }
 
 export interface MapInfo {
   id: string;
   name: string;
-  englishName: string;
+  englishName?: string;
 }
 
 export const useMapStore = defineStore('new_map', () => {
   const map = ref<Map>();
-  const vLayer = ref<VectorSourceLayer>();
+  const vectorLayer = ref<VectorSourceLayer>();
+  const markerLayer = ref<VectorSourceLayer>();
   const info = ref<MapInfo>({
     id: '',
     name: '',
     englishName: ''
   });
-  const images = ref<MapImage[]>([]);
-  const markers = ref<Marker[]>([]);
-  const idMap = new Map();
-  const withModifyKey = ref(true);
+  const images = ref<Record<string, MapImage>>({});
+  const markers = ref<Record<string, MapMarker>>({});
 
-  function setMap(newMap: { map: Map; vLayer: VectorSourceLayer }) {
+  function setMap(newMap: {
+    map: Map;
+    vectorLayer: VectorSourceLayer;
+    markerLayer: VectorSourceLayer;
+  }) {
     map.value = newMap.map;
-    vLayer.value = newMap.vLayer;
+    vectorLayer.value = newMap.vectorLayer;
+    markerLayer.value = newMap.markerLayer;
   }
 
   function addImage(img: MapImage) {
-    const { id, url, size, rotate, center, priority, scale } = img;
-    images.value.push(img);
-    const source = new EditableImage({
-      url,
-      imageScale: scale,
-      imageCenter: center,
-      imageRotate: rotate
-    });
-    const imgLayer = new ImageLayer({
-      source,
-      zIndex: priority ?? 1
-    });
-    imgLayer.set('srcImage', img);
+    const { id } = img;
+    images.value[id] = img;
+    const imgLayer = createImageLayer(img);
     map.value?.addLayer(imgLayer);
 
-    let rect = calcRect({
-      extent: calcExtent(center, size),
-      center,
-      rotate,
-      scale
-    });
-    rect = [...rect, rect[0]];
-    const rectFeature = new Feature(new Polygon([rect]));
-    rectFeature.set('imgLayer', imgLayer);
-    imgLayer.set('featureController', rectFeature);
-    rectFeature.on('change', e => {
-      const geometry = (e.target as Feature).get('modifyGeometry');
-      const source = imgLayer.getSource();
-      if (geometry?.center) {
-        const curCenter = geometry.center;
-        const pos = (geometry.geometry as Polygon).getCoordinates()[0][0];
-        const pPos = rect[0];
-        const pCenter = center;
-        const angle = Math.atan2(pos[1] - curCenter[1], pos[0] - curCenter[0]);
-        if (source) {
-          if (settings.value.scale) {
-            source.setScale(
-              (distance(pos, curCenter) / distance(pPos, pCenter)) * scale
-            );
-          }
-          if (settings.value.rotate) {
-            source.setRotation(-angle - Math.atan(size[1] / size[0]));
-          }
-          source.setCenter(geometry.center);
-        }
-      } else {
-        source?.setCenter(
-          calcCenter((e.target as Feature).getGeometry() as Polygon).center
-        );
-      }
-    });
-    vLayer.value?.getSource()?.addFeature(rectFeature);
-
-    idMap.set(id, imgLayer);
+    const feature = createFeatureForImageLayer(imgLayer);
+    imgLayer.set('featureController', feature);
+    vectorLayer.value?.getSource()?.addFeature(feature as Feature);
     return imgLayer;
   }
 
-  function rmImage(img: StaticImageLayer | string): boolean {
+  function removeImage(img: EditableImageLayer | string): boolean {
+    if (!map.value) {
+      return false;
+    }
     if (typeof img === 'string') {
-      if (idMap.get(img) === undefined) {
+      if (!images.value[img] || !images.value[img].layer) {
         return false;
       }
-      map.value?.removeLayer(idMap.get(img) as StaticImageLayer);
+      const imageLayer = images.value[img].layer as EditableImageLayer;
+      map.value.removeLayer(imageLayer);
+      vectorLayer.value
+        ?.getSource()
+        ?.removeFeature(imageLayer.get('featureController'));
+      delete images.value[img];
       return true;
     }
 
     try {
-      map.value?.removeLayer(img);
+      map.value.removeLayer(img);
+      vectorLayer.value
+        ?.getSource()
+        ?.removeFeature(img.get('featureController'));
+      delete images.value[(img.get('srcImage') as MapImage).id];
+      return true;
     } catch (_e) {
       const e = _e as Error;
       console.error(e.message);
       return false;
     }
-    return true;
   }
 
-  function getLayerById(id: string): StaticImageLayer | undefined {
-    return idMap.get(id);
+  function getImageLayerById(id: string): EditableImageLayer | undefined {
+    return images.value[id].layer;
+  }
+
+  function getImageById(id: string): MapImage | undefined {
+    return images.value[id];
+  }
+
+  function addMarker(options: Partial<MapMarker>): Feature {
+    const marker: MapMarker = {
+      id: options.id ?? uuid(),
+      name: '',
+      englishName: '',
+      coordinate: options.coordinate ??
+        map.value?.getView().getCenter() ?? [0, 0],
+      color: options.color ?? '#000',
+      mapId: options.mapId ?? info.value.id ?? 'unknown',
+      openTime: '',
+      extraInfo: ''
+    };
+    const markerFeature = createMarker(marker);
+    markerFeature.set('srcMarker', marker);
+    marker.feature = markerFeature;
+    markers.value[marker.id] = marker;
+    markerLayer.value?.getSource()?.addFeature(markerFeature);
+    return markerFeature;
+  }
+
+  function removeMarker(marker: Feature | string): boolean {
+    if (!markerLayer.value) {
+      return false;
+    }
+    if (typeof marker === 'string') {
+      if (!markers.value[marker] || !markers.value[marker].feature) {
+        return false;
+      }
+      markerLayer.value
+        .getSource()
+        ?.removeFeature(markers.value[marker].feature as Feature);
+      delete markers.value[marker];
+      return true;
+    }
+
+    try {
+      markerLayer.value.getSource()?.removeFeature(marker);
+      delete markers.value[(marker.get('srcMarker') as MapMarker).id];
+      return true;
+    } catch (_e) {
+      const e = _e as Error;
+      console.error(e.message);
+      return false;
+    }
+  }
+
+  function getMarkerById(id: string): MapMarker | undefined {
+    return markers.value[id];
+  }
+
+  function getMarkerFeatureById(id: string): Feature | undefined {
+    return markers.value[id].feature;
   }
 
   return {
@@ -140,12 +186,17 @@ export const useMapStore = defineStore('new_map', () => {
     images,
     markers,
     map,
-    vLayer,
-    withModifyKey,
+    vectorLayer,
+    markerLayer,
     addImage,
     setMap,
-    rmImage,
-    getLayerById
+    removeImage,
+    getImageLayerById,
+    getImageById,
+    addMarker,
+    removeMarker,
+    getMarkerFeatureById,
+    getMarkerById
   };
 });
 

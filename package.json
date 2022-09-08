@@ -22,9 +22,11 @@
     "@vueuse/components": "^9.1.1",
     "@vueuse/core": "^9.1.0",
     "@vueuse/head": "^0.7.9",
+    "axios": "^0.27.2",
     "naive-ui": "^2.33.0",
     "nprogress": "^0.2.0",
-    "ol": "^7.1.0",
+    "ol": "7",
+    "ol-contextmenu": "5.0.0-alpha",
     "pinia": "^2.0.17",
     "pinia-plugin-persistedstate": "^2.1.1",
     "uuid": "^8.3.2",
@@ -77,6 +79,6 @@
   },
   "lint-staged": {
     "*.{js,ts,vue,jsx,tsx}": "eslint --fix",
-    "src/**/*": "prettier --write"
+    "src/**": "prettier --write"
   }
 }

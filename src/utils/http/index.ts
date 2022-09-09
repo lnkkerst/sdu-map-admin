@@ -5,7 +5,6 @@ import type {
   AxiosResponse
 } from 'axios';
 import axios from 'axios';
-import { Snackbar } from '@varlet/ui';
 
 export function createAxios(options: AxiosRequestConfig = {}): AxiosInstance {
   const defaultOptions: AxiosRequestConfig = {
@@ -15,24 +14,24 @@ export function createAxios(options: AxiosRequestConfig = {}): AxiosInstance {
 }
 
 function errorHandler(error: any) {
-  const t = (msg: string) => msg;
-  if (error.code === 401) {
-    Snackbar.error({
-      content: t('api.token_invalid'),
-      position: 'bottom'
-    });
-  }
-  if (error.code === 403) {
-    Snackbar.error({
-      content: t('api.token_forbidden'),
-      position: 'bottom'
-    });
-  }
-  if (error.code === 404) {
-    Snackbar.error({
-      content: t('api.not_found')
-    });
-  }
+  // const t = (msg: string) => msg;
+  // if (error.code === 401) {
+  //   Snackbar.error({
+  //     content: t('api.token_invalid'),
+  //     position: 'bottom'
+  //   });
+  // }
+  // if (error.code === 403) {
+  //   Snackbar.error({
+  //     content: t('api.token_forbidden'),
+  //     position: 'bottom'
+  //   });
+  // }
+  // if (error.code === 404) {
+  //   Snackbar.error({
+  //     content: t('api.not_found')
+  //   });
+  // }
   return Promise.reject(error);
 }
 

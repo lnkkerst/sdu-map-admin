@@ -8,15 +8,16 @@ import type {
   MapImage,
   MapMarker
 } from './../store/newMap';
+
+import { calcCenter, calcExtent, calcRect } from '~/utils/geom';
+import EditableImage from '~/models/ol/EditableImageSource';
+import markerSVG from '~/assets/images/map-marker.svg?raw';
+
 /**
  * Create a ImageLayer with static image
  * @param  {MapImage} img
  * @returns EditableImageLayer
  */
-import { calcCenter, calcExtent, calcRect } from '~/utils/geom';
-import EditableImage from '~/models/ol/EditableImageSource';
-import markerSVG from '~/assets/images/map-marker.svg?raw';
-
 export function createImageLayer(img: MapImage): EditableImageLayer {
   const { url, rotate, center, priority, scale } = img;
   const source = new EditableImage({
@@ -29,15 +30,16 @@ export function createImageLayer(img: MapImage): EditableImageLayer {
     source,
     zIndex: priority ?? 1
   });
-  /**
-   * Create a feature for controlling the image layer.
-   * @param  {EditableImageLayer} imageLayer - The image layer to be controlled.
-   * @returns Feature - The rectangle feature which can control the image layer.
-   */
+
   imgLayer.set('srcImage', img);
   return imgLayer;
 }
 
+/**
+ * Create a feature for controlling the image layer.
+ * @param  {EditableImageLayer} imageLayer - The image layer to be controlled.
+ * @returns Feature - The rectangle feature which can control the image layer.
+ */
 export function createFeatureForImageLayer(
   imageLayer: EditableImageLayer
 ): Feature | undefined {
@@ -78,15 +80,16 @@ export function createFeatureForImageLayer(
       );
     }
   });
-  /**
-   * Create a marker.
-   * @param  {MapMarker} mk - The source Marker.
-   * @returns Feature - The marker.
-   */
+
   feature.set('imageLayer', imageLayer);
   return feature;
 }
 
+/**
+ * Create a marker.
+ * @param  {MapMarker} mk - The source Marker.
+ * @returns Feature - The marker.
+ */
 export function createMarker(mk: MapMarker): Feature {
   const { coordinate, color } = mk;
   const img = new Image();

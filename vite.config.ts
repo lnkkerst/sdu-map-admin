@@ -6,7 +6,7 @@ import generateSitemap from 'vite-ssg-sitemap';
 import Layouts from 'vite-plugin-vue-layouts';
 import Components from 'unplugin-vue-components/vite';
 import {
-  VarletUIResolver,
+  QuasarResolver,
   VueUseComponentsResolver
 } from 'unplugin-vue-components/resolvers';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -17,6 +17,7 @@ import Inspect from 'vite-plugin-inspect';
 import LinkAttributes from 'markdown-it-link-attributes';
 import Unocss from 'unocss/vite';
 import Shiki from 'markdown-it-shiki';
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
 
 export default defineConfig({
   resolve: {
@@ -28,7 +29,8 @@ export default defineConfig({
   plugins: [
     Vue({
       include: [/\.vue$/, /\.md$/],
-      reactivityTransform: true
+      reactivityTransform: true,
+      template: { transformAssetUrls }
     }),
 
     // https://github.com/hannoeru/vite-plugin-pages
@@ -56,7 +58,7 @@ export default defineConfig({
 
     // https://github.com/antfu/unplugin-vue-components
     Components({
-      resolvers: [VarletUIResolver(), VueUseComponentsResolver()],
+      resolvers: [VueUseComponentsResolver(), QuasarResolver()],
       // allow auto load markdown components under `./src/components/`
       extensions: ['vue', 'md'],
       // allow auto import and register components used in markdown
@@ -129,7 +131,11 @@ export default defineConfig({
 
     // https://github.com/antfu/vite-plugin-inspect
     // Visit http://localhost:3333/__inspect/ to see the inspector
-    Inspect()
+    Inspect(),
+
+    quasar({
+      sassVariables: 'src/quasar-variables.sass'
+    })
   ],
 
   // https://github.com/vitest-dev/vitest

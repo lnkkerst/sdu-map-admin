@@ -8,15 +8,29 @@ const state = useStorage(
     x: 128,
     y: 128,
     w: 180,
-    h: 490
+    h: 340,
+    restoreHeight: 340,
+    minimize: false,
+    pinned: false
   },
   localStorage,
   { mergeDefaults: true }
 );
 
 const active = $ref(false);
-const sizable = $ref(true);
-const display = $ref(true);
+
+const draggable = $ref(false);
+
+const toggleMinimize = () => {
+  if (state.value.minimize) {
+    state.value.h = state.value.restoreHeight;
+    state.value.minimize = false;
+  } else {
+    state.value.restoreHeight = state.value.h;
+    state.value.h = 24;
+    state.value.minimize = true;
+  }
+};
 </script>
 
 <template>
@@ -26,59 +40,49 @@ const display = $ref(true);
     v-model:w="state.w"
     v-model:h="state.h"
     v-model:active="active"
-    :draggable="sizable && active"
-    :resizable="sizable && active"
+    :draggable="!state.pinned && draggable"
+    :resizable="!state.pinned && !state.minimize"
     :parent="true"
     :min-w="128"
-    :min-h="128"
-    class="draggable-menu border-0"
+    :min-h="24"
+    class="border-0 draggable-menu"
   >
-    <div
-      class="w-full h-full rounded shadow"
-      :class="{ 'shadow-xl': active }"
-      style="background-color: var(--color-body)"
-    >
-      <var-app-bar
-        class="rounded-t-md h-6 text-sm absolute"
-        @mousedown.prevent="active = true"
+    <q-card h-full w-full pt-24px>
+      <q-bar
+        dense
+        absolute
+        top-0
+        w-full
+        @mousedown="draggable = true"
+        @mouseup="draggable = false"
       >
-        <template #left>{{ t('new_map_menu.title') }}</template>
-        <template #right>
-          <var-icon
-            v-show="display"
-            i-mdi-minus
-            @click="display = false"
-          ></var-icon>
-          <var-icon
-            v-show="!display"
-            i-mdi-plus
-            @click="display = true"
-          ></var-icon>
-          <var-icon
-            v-show="!sizable"
-            i-mdi-pin-off
-            text-sm
-            @click="sizable = true"
-          ></var-icon>
-          <var-icon
-            v-show="sizable"
-            i-mdi-pin
-            text-sm
-            @click="sizable = false"
-          ></var-icon>
-          <var-icon></var-icon>
-        </template>
-      </var-app-bar>
-
-      <div v-show="display" class="h-full w-full pt-6 flex">
+        <div cursor-default>{{ t('new_map_menu.title') }}</div>
+        <q-space></q-space>
+        <q-btn
+          flat
+          dense
+          round
+          :icon="state.minimize ? 'mdi-plus' : 'mdi-minus'"
+          @click="() => toggleMinimize()"
+        >
+        </q-btn>
+        <q-btn
+          flat
+          dense
+          round
+          :icon="state.pinned ? 'mdi-pin-off' : 'mdi-pin'"
+          @click="state.pinned = !state.pinned"
+        ></q-btn>
+      </q-bar>
+      <q-scroll-area h-full>
         <slot />
-      </div>
-    </div>
+      </q-scroll-area>
+    </q-card>
   </Vue3DraggableResizable>
 </template>
 
 <style scoped>
-.draggable-menu >>> .vdr-handle {
+.draggable-menu:deep(.vdr-handle) {
   opacity: 0;
 }
 </style>

@@ -7,39 +7,14 @@ export {};
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Counter: typeof import('./components/Counter.vue')['default'];
-    DrawerLink: typeof import('./components/layouts/DrawerLink.vue')['default'];
-    Footer: typeof import('./components/Footer.vue')['default'];
-    NConfigProvider: typeof import('naive-ui')['NConfigProvider'];
+    AppBarDarkModeButton: typeof import('./components/appbar/AppBarDarkModeButton.vue')['default'];
+    AppBarLangButton: typeof import('./components/appbar/AppBarLangButton.vue')['default'];
+    MarkerInfo: typeof import('./components/new-map/MarkerInfo.vue')['default'];
     NewMap: typeof import('./components/new-map/NewMap.vue')['default'];
-    NewMap_ol: typeof import('./components/new-map/NewMap_ol.vue')['default'];
-    NewMapll: typeof import('./components/new-map/NewMapll.vue')['default'];
     NewMapMenu: typeof import('./components/new-map/NewMapMenu.vue')['default'];
     NewMapMenuContent: typeof import('./components/new-map/NewMapMenuContent.vue')['default'];
     NewMapMenuDragWrapper: typeof import('./components/new-map/NewMapMenuDragWrapper.vue')['default'];
-    README: typeof import('./components/README.md')['default'];
     RouterLink: typeof import('vue-router')['RouterLink'];
     RouterView: typeof import('vue-router')['RouterView'];
-    ToolbarLanguageButton: typeof import('./components/toolbar/ToolbarLanguageButton.vue')['default'];
-    UseDraggable: typeof import('@vueuse/components')['UseDraggable'];
-    VarAppBar: typeof import('@varlet/ui')['_AppBarComponent'];
-    VarButton: typeof import('@varlet/ui')['_ButtonComponent'];
-    VarCard: typeof import('@varlet/ui')['_CardComponent'];
-    VarCell: typeof import('@varlet/ui')['_CellComponent'];
-    VarCol: typeof import('@varlet/ui')['_ColComponent'];
-    VarForm: typeof import('@varlet/ui')['_FormComponent'];
-    VarIcon: typeof import('@varlet/ui')['_IconComponent'];
-    VarImage: typeof import('@varlet/ui')['_ImageComponent'];
-    VarInput: typeof import('@varlet/ui')['_InputComponent'];
-    VarList: typeof import('@varlet/ui')['_ListComponent'];
-    VarMenu: typeof import('@varlet/ui')['_MenuComponent'];
-    VarPopup: typeof import('@varlet/ui')['_PopupComponent'];
-    VarRow: typeof import('@varlet/ui')['_RowComponent'];
-    VarSpace: typeof import('@varlet/ui')['_SpaceComponent'];
-    VarStyleProvider: typeof import('@varlet/ui')['_StyleProviderComponent'];
-    VarSwitch: typeof import('@varlet/ui')['_SwitchComponent'];
-    VarTab: typeof import('@varlet/ui')['_TabComponent'];
-    VarTabs: typeof import('@varlet/ui')['_TabsComponent'];
-    VarUploader: typeof import('@varlet/ui')['_UploaderComponent'];
   }
 }

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { StyleProvider } from '@varlet/ui';
-import dark from '@varlet/ui/es/themes/dark';
-import { isDark } from './composables/dark';
-
+import { useQuasar } from 'quasar';
 onMounted(() => {
-  StyleProvider(isDark.value ? dark : null);
+  useQuasar().dark.set(isDark.value);
 });
 </script>
 

@@ -11,6 +11,8 @@ button:
   toggle_langs: 切换语言
 description: 山大地图项目的后台
 drawer:
+  header:
+    menu: 菜单
   list:
     home: 主页
     new_map: 新版地图
@@ -38,6 +40,7 @@ new_map_menu:
   title: 工具栏
   upload: 上传图片
   upload_state:
+    error: 上传失败
     finished: 完成
     outlining: 描边中...
     waiting: 等待上传

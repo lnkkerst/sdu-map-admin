@@ -1,9 +1,9 @@
-import dark from '@varlet/ui/es/themes/dark';
-import { StyleProvider } from '@varlet/ui';
+import { Dark } from 'quasar';
 
 export const isDark = useDark({
   onChanged(newDarkVal: boolean) {
-    StyleProvider(newDarkVal ? dark : null);
+    Dark.set(newDarkVal);
+    document.documentElement.classList.toggle('dark', newDarkVal);
   }
 });
 

@@ -1,79 +1,80 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { VarFile } from '@varlet/ui';
 import { v4 as uuid } from 'uuid';
+import { Notify } from 'quasar';
 
 const { t } = useI18n();
 const map = useMapStore();
 const settings = useSetting();
 
-const files = ref<VarFile[]>([]);
-const img = ref(new Image());
-
-const handleBeforeRead = (file: VarFile): boolean => {
-  file.state = 'loading';
-  return true;
-};
-
-const handleAfterRead = async (file: VarFile) => {
-  file.state = 'loading';
-  img.value.src = file.url as string;
-  img.value.onload = () => {
-    const layer = map.addImage({
-      url: img.value.src,
-      id: uuid(),
-      center: map.map?.getView()?.getCenter() ?? [0, 0],
-      size: [img.value.width, img.value.height],
-      scale: 1,
-      rotate: 0,
-      priority: 100
-    });
-    layer.getSource();
-    file.state = 'success';
-  };
-};
-
-const uploadState = computed(() => {
-  if (!files.value.length) {
-    return 'waiting';
-  }
-  if (files.value[0].state === 'loading') {
-    return 'outlining';
-  }
-  if (files.value[0].state === 'success') {
-    return 'finished';
-  }
+const imageInput = $ref<HTMLInputElement | null>(null);
+const imageInputState = $ref({
+  loading: false
 });
+
+const handleSubmitImage = () => {
+  if (!imageInput) {
+    return;
+  }
+  imageInput.onchange = () => {
+    imageInputState.loading = true;
+    if (!imageInput.files || !imageInput.files.length) {
+      imageInputState.loading = false;
+      return;
+    }
+    const reader = new FileReader();
+    const img = new Image();
+    reader.onload = e => {
+      img.src = e.target?.result as string;
+      img.onerror = () => {
+        Notify.create({
+          type: 'negative',
+          message: t('new_map_menu.upload_state.error')
+        });
+        imageInputState.loading = false;
+      };
+      img.onload = () => {
+        map.addImage({
+          url: img.src,
+          id: uuid(),
+          center: map.map?.getView()?.getCenter() ?? [0, 0],
+          size: [img.width, img.height],
+          scale: 1,
+          rotate: 0,
+          priority: 100
+        });
+        imageInputState.loading = false;
+      };
+    };
+    reader.readAsDataURL(imageInput.files[0]);
+  };
+  imageInput.click();
+};
 </script>
 
 <template>
-  <div
-    class="w-full mt-sm px-xs items-center flex-column justify-center overflow-auto"
-  >
-    <div>
-      <var-uploader
-        v-model="files"
-        maxlength="1"
-        @after-read="handleAfterRead"
-        @before-read="handleBeforeRead"
+  <div px-sm py-xs>
+    <input ref="imageInput" type="file" accept="image/*" hidden />
+    <div flex justify-center>
+      <q-btn
+        :loading="imageInputState.loading"
+        icon="mdi-image-plus"
+        color="primary"
+        flat
+        @click="handleSubmitImage"
       >
-        <var-button type="primary">{{ t('new_map_menu.upload') }}</var-button>
-      </var-uploader>
-      <div class="text-xs mt-2">
-        {{ t(`new_map_menu.upload_state.${uploadState}`) }}
-      </div>
+      </q-btn>
     </div>
-    <div flex justify-between mt-sm>
+    <div flex justify-between items-center>
       <span text-sm>{{ t('new_map_menu.rotate') }}</span>
-      <var-switch v-model="settings.rotate" />
+      <q-toggle v-model="settings.rotate" left-sm relative />
     </div>
-    <div flex justify-between mt-sm>
+    <div flex justify-between items-center>
       <span text-sm>{{ t('new_map_menu.scale') }}</span>
-      <var-switch v-model="settings.scale" />
+      <q-toggle v-model="settings.scale" left-sm relative />
     </div>
-    <div flex justify-between mt-sm>
+    <div flex justify-between items-center>
       <span text-sm>{{ t('new_map_menu.drag') }}</span>
-      <var-switch v-model="settings.dragWithoutModifyKey" />
+      <q-toggle v-model="settings.dragWithoutModifyKey" left-sm relative />
     </div>
   </div>
 </template>

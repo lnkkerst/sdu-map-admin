@@ -10,6 +10,8 @@ button:
   toggle_dark: Toggle dark mode
   toggle_langs: Change languages
 drawer:
+  header:
+    menu: Menu
   list:
     new_map: New map
 intro:
@@ -35,6 +37,7 @@ new_map_menu:
   title: Tools
   upload: Upload
   upload_state:
+    error: Upload failed.
     finished: finished
     outlining: outlining...
     waiting: waiting...

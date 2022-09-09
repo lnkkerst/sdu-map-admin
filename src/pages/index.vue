@@ -1,8 +1,10 @@
 <script setup lang="ts"></script>
 
 <template>
-  <NewMap></NewMap>
-  <NewMapMenu z-1000></NewMapMenu>
+  <q-page min-h-inherit>
+    <NewMap h-full w-full absolute></NewMap>
+    <NewMapMenu z-1></NewMapMenu>
+  </q-page>
 </template>
 
 <style scoped></style>

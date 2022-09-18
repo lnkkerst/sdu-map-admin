@@ -2,12 +2,8 @@ import { distance } from 'ol/coordinate';
 import { Point, Polygon } from 'ol/geom';
 import ImageLayer from 'ol/layer/Image';
 import { Feature } from 'ol';
-import { Icon, Style } from 'ol/style';
-import type {
-  EditableImageLayer,
-  MapImage,
-  MapMarker
-} from './../store/newMap';
+import { Icon, Style, Text } from 'ol/style';
+import type { EditableImageLayer, MapImage, MapMarker } from '~/models/map';
 
 import { calcCenter, calcExtent, calcRect } from '~/utils/geom';
 import EditableImage from '~/models/ol/EditableImageSource';
@@ -92,12 +88,15 @@ export function createFeatureForImageLayer(
  */
 export function createMarker(mk: MapMarker): Feature {
   const { coordinate, color } = mk;
+
   const img = new Image();
   img.src = `data:image/svg+xml;utf8,${encodeURIComponent(markerSVG)}`;
   img.style.color = 'red';
+
   const iconFeature = new Feature({
     geometry: new Point(coordinate)
   });
+
   const iconStyle = new Style({
     image: new Icon({
       src: `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -105,6 +104,14 @@ export function createMarker(mk: MapMarker): Feature {
       )}`,
       scale: 1,
       anchor: [0.5, 1]
+    }),
+    text: new Text({
+      text: mk.name,
+      font: '16px sans-serif',
+      textAlign: 'left',
+      justify: 'left',
+      offsetY: -12,
+      offsetX: 10
     })
   });
 

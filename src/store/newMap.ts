@@ -1,58 +1,20 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import type Map from 'ol/Map';
-import type { Coordinate } from 'ol/coordinate';
-import type ImageLayer from 'ol/layer/Image';
-import type VectorLayer from 'ol/layer/Vector';
 import type { Feature } from 'ol';
-import type VectorSource from 'ol/source/Vector';
 import { v4 as uuid } from 'uuid';
-import type EditableImage from '~/models/ol/EditableImageSource';
 import {
   createFeatureForImageLayer,
   createImageLayer,
   createMarker
 } from '~/utils/map';
-
-export type EditableImageLayer = ImageLayer<EditableImage>;
-export type VectorSourceLayer = VectorLayer<VectorSource>;
-
-export enum BuildingType {
-  Teaching,
-  Dormitory,
-  Lab,
-  Functional,
-  Landscape
-}
-
-export interface MapImage {
-  id: string;
-  url: string;
-  size: [number, number];
-  scale: number;
-  center: Coordinate;
-  rotate: number;
-  priority?: number;
-  extraInfo?: string;
-  layer?: EditableImageLayer;
-}
-
-export interface MapMarker {
-  id: string;
-  coordinate: Coordinate;
-  color: string;
-  mapId: string;
-  name: string;
-  englishName: string;
-  openTime: string;
-  extraInfo?: string;
-  feature?: Feature;
-}
-
-export interface MapInfo {
-  id: string;
-  name: string;
-  englishName?: string;
-}
+import type {
+  EditableImageLayer,
+  MapImage,
+  MapInfo,
+  MapMarker,
+  VectorSourceLayer
+} from '~/models/map';
+import { BuildingType } from '~/models/map';
 
 export const useMapStore = defineStore('new_map', () => {
   const map = ref<Map>();
@@ -130,14 +92,15 @@ export const useMapStore = defineStore('new_map', () => {
   function addMarker(options: Partial<MapMarker>): Feature {
     const marker: MapMarker = {
       id: options.id ?? uuid(),
-      name: '',
-      englishName: '',
+      name: options.name ?? '',
+      englishName: options.englishName ?? '',
       coordinate: options.coordinate ??
         map.value?.getView().getCenter() ?? [0, 0],
       color: options.color ?? '#000',
       mapId: options.mapId ?? info.value.id ?? 'unknown',
-      openTime: '',
-      extraInfo: ''
+      type: options.type ?? BuildingType.Unknown,
+      openTime: options.openTime ?? '',
+      extraInfo: options.extraInfo ?? ''
     };
     const markerFeature = createMarker(marker);
     markerFeature.set('srcMarker', marker);

@@ -96,6 +96,7 @@ export function createMarkerLayer() {
     source,
     zIndex: 114515
   });
+
   const modify = new Modify({
     hitDetection: layer,
     source,
@@ -105,12 +106,14 @@ export function createMarkerLayer() {
       );
     }
   });
+
   modify.on(['modifystart', 'modifyend'], evt => {
     if (useMapStore().map) {
       useMapStore().map.getTargetElement().style.cursor =
         evt.type === 'modifystart' ? 'grabbing' : 'pointer';
     }
   });
+
   const overlaySource = modify.getOverlay().getSource();
   overlaySource.on(['addfeature', 'removefeature'], evt => {
     if (useMapStore().map) {
@@ -118,6 +121,7 @@ export function createMarkerLayer() {
         evt.type === 'addfeature' ? 'pointer' : '';
     }
   });
+
   return {
     layer,
     interactions: [modify]

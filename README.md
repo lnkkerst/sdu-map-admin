@@ -31,7 +31,7 @@ pnpm run build:ssg
 ## TODO
 
 - [ ] Front end
-  - [ ] Marker info CURD
+  - [x] Marker info CURD
   - [ ] Image base scale
   - [ ] Multi select
     - [x] Move

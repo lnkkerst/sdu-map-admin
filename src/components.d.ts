@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     AppBarDarkModeButton: typeof import('./components/appbar/AppBarDarkModeButton.vue')['default'];
     AppBarLangButton: typeof import('./components/appbar/AppBarLangButton.vue')['default'];
     MarkerInfo: typeof import('./components/new-map/MarkerInfo.vue')['default'];
+    MarkerInfoCard: typeof import('./components/new-map/MarkerInfoCard.vue')['default'];
     NewMap: typeof import('./components/new-map/NewMap.vue')['default'];
     NewMapMenu: typeof import('./components/new-map/NewMapMenu.vue')['default'];
     NewMapMenuContent: typeof import('./components/new-map/NewMapMenuContent.vue')['default'];

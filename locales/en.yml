@@ -41,5 +41,21 @@ new_map_menu:
     finished: finished
     outlining: outlining...
     waiting: waiting...
+marker_info:
+  title: Modify
+  name: Name
+  english_name: English Name
+  open_time: Opening hours
+  type: Building type
+  color: Color
+  type_list:
+    teaching: Teaching
+    lab: Laboratory
+    dormitory: Dormitory
+    landscape: Landscape
+    functional: Functional
+    unknown: Unknown
+  submit: Submit
 not-found: Not found
 title: SDU Map - Admin
+loading: Loading

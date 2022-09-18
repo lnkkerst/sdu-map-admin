@@ -44,5 +44,21 @@ new_map_menu:
     finished: 完成
     outlining: 描边中...
     waiting: 等待上传
+marker_info:
+  title: 修改标记信息
+  name: 名称
+  english_name: 英文名称
+  open_time: 开放时间
+  type: 类型
+  color: 颜色
+  type_list:
+    teaching: 教学楼
+    lab: 实验楼
+    dormitory: 宿舍楼
+    landscape: 景观
+    functional: 功能区
+    unknown: 未知
+  submit: 提交
 not-found: 未找到页面
 title: 山大地图 - 终端
+loading: 加载中
